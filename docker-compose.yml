@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: node_server
+    container_name: node_server
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - HOST_NAME=db
+      - DEV_DB_NAME=$DEV_DB_NAME
+    ports:
+      - "5000:5000"
+    volumes:
+      - ".:/app"
+    networks:
+      - app-network
+    depends_on:
+      - db
+  db:
+    image: mongo:4.2-bionic
+    container_name: db
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - dbdata:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+  node_modules:
